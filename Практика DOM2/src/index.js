@@ -64,7 +64,8 @@ const initDeleteButtonListener = () => {
     const deleteButtonElements = document.querySelectorAll('.delete-button');
 
     for(const deleteButtonElement of deleteButtonElements) {
-        deleteButtonElement.addEventListener('click', () => {
+        deleteButtonElement.addEventListener('click', (event) => {
+        event.stopPropagation();
         const index = deleteButtonElement.dataset.index;
         students.splice(index, 1);
         renderStudents();
@@ -76,7 +77,8 @@ const initDeleteNameButtonListener = () => {
     const deleteNameButtonElements = document.querySelectorAll('.delete-name');
 
     for(const deleteNameButtonElement of deleteNameButtonElements) {
-        deleteNameButtonElement.addEventListener('click', () => {
+        deleteNameButtonElement.addEventListener('click', (event) => {
+          event.stopPropagation();
             const index = deleteNameButtonElement.dataset.indexname;
             students[index].name = 'Неизвестный студент';
             renderStudents();
@@ -84,12 +86,29 @@ const initDeleteNameButtonListener = () => {
     }
 }
 
+const initColorAlertListener = () => {
+  const studentsElements = document.querySelectorAll('.student');
+
+  for (const student of studentsElements) {
+    student.addEventListener('click', () => {
+      const color = student.dataset.color;
+      alert(`Любимый цвет: ${color}`);
+      renderStudents();
+    })
+  }
+}
+
+//document.querySelector("html").addEventListener("click", () => {
+  //alert("Клик по html");
+//});
+
+
+
 const renderStudents = () => {
     const studentsHtml = students.map((student, index) => {
         return `<li class="student" data-color = ${student.color}>
         <p class="student-name" style="${student.isLover ? "color: #FF8000" : "color: ${student.color}"}">
-          ${student.name}, любимый цвет
-          <span style="color: ${student.color}"> ${student.color}</span>
+          ${student.name}</span>
         </p>
         <button class = "student-greet" data-name = ${student.name}>Приветствовать</button>
         <button data-index=${index} class = "delete-button">Удалить</button>
@@ -104,6 +123,7 @@ const renderStudents = () => {
     greetStudent();
     initDeleteButtonListener();
     initDeleteNameButtonListener();
+    initColorAlertListener();
 };
 
 renderStudents();
@@ -117,7 +137,9 @@ buttonElement.addEventListener("click", () => {
   }
 
 students.push({
-    name: nameInputElement.value,
+    name: nameInputElement.value
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;'),
     color: colorInputElement.value,
     isLover: false
 });      
@@ -126,4 +148,3 @@ students.push({
 
   nameInputElement.value = "";
 });
-
