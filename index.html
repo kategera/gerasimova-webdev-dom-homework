@@ -89,7 +89,7 @@
     
     const renderUsers  = () => {
       const usersHtml = users.map((user, index) => {
-        return ` <li class="comment">
+        return ` <li class="comment" data-index=${index}>
               <div class="comment-header">
                 <div>${user.name}</div>
                 <div>${user.date}</div>
@@ -123,6 +123,7 @@
       });
 
       initLikeListener();
+      initCommentAnswer();
 
     };
 
@@ -157,16 +158,29 @@
       const likeButtons = document.querySelectorAll('.like-button');
 
       for(const likeButton of likeButtons) {
-        likeButton.addEventListener('click', () => {
+        likeButton.addEventListener('click', (event) => {
           const index = likeButton.dataset.index;
           users[index].isLiked = !users[index].isLiked;
           users[index].likeCounter += users[index].isLiked? +1 : -1;
+          event.stopPropagation();
 
           renderUsers();
-        })
-      }
-    }
+        });
+      };
+    };
 
+    const initCommentAnswer = () => {
+      const commentElements = document.querySelectorAll('.comment');
+
+      for(const commentElement of commentElements) {
+        commentElement.addEventListener('click', () => {
+          const index = commentElement.dataset.index;
+          commentInputElement.value = `Ответ на комментарий: "${users[index].comment}" от пользователя: ${users[index].name}`;
+        });
+      };
+    };
+    
+    
     renderUsers();
   </script>
 </html>
