@@ -39,6 +39,7 @@
         <div>
             <br />
             <button class="button" id="surname-button">Сохранить фамилию</button>
+            <button class="button" id="delete-surname-button">Стереть сохраненную строку</button>
         </div>
   </body>
 
@@ -48,8 +49,9 @@
     const textInputElement = document.getElementById("text-input");
     const surnameButtonElement = document.getElementById("surname-button");
     const inputElement = document.getElementById("surname-input");
+    const deleteSurnameButton = document.getElementById("delete-surname-button");
     let tasks = [];
-    //let string =[];
+    let string =[];
 
     //Запросы в API асинхронные, мы не знаем как долго будет выполняться этот запрос
     //Запрос может выполняться секунды и даже минуты
@@ -158,7 +160,6 @@
     }).then((response) => {
         response.json().then((responseData) => {
         console.log(responseData);
-        //string = responseData.todos;
         renderTasks();
         })
     })
@@ -168,6 +169,17 @@
       inputElement.value = "";
     });
 
+    //Удалить строку
+    deleteSurnameButton.addEventListener("click", () => {   
+     fetch("https://webdev-hw-api.vercel.app/api/tasks/string", {
+        method: "DELETE",
+    }).then((response) => {
+        response.json().then((responseData) => {
+        string = responseData.string;
+        console.log(string);
+        })
+    })
+    });
 
 
     //таймер на список задач
