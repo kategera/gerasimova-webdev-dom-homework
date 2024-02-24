@@ -70,14 +70,6 @@
       tasks = responseData.todos;
       renderTasks();
     })
-        // const jsonPromise = response.json();
-
-        // jsonPromise.then((responseData) => {
-        //     console.log(responseData);
-        // tasks = responseData.todos;
-        // renderTasks();
-        // })
-    
 
 
     const renderTasks = () => {
@@ -121,16 +113,7 @@
         renderTasks();
       })
       renderTasks();
-        }, 1000);    
-    // }).then((response) => {
-    //     response.json().then((responseData) => {
-    //     console.log(responseData);
-    //     tasks = responseData.todos;
-    //     renderTasks();
-    //     })
-    // })            
-    //         renderTasks();
-    //     }, 1000);       
+        }, 1000);      
         });
       };
     };
@@ -152,11 +135,20 @@
       return response.json();
     })
       .then((responseData) => {
-        console.log(responseData);
-        tasks = responseData.todos;
-        renderTasks();
-        textInputElement.value = "";
-        })
+
+        fetch("https://wedev-api.sky.pro/api/todos", {
+        method: "GET"
+    })
+    .then((response) => {
+      return response.json()
+    })
+    .then((responseData) => {
+      console.log(responseData);
+      tasks = responseData.todos;
+      renderTasks();
+       textInputElement.value = "";
+    })
+    })
     })
       renderTasks();
 
