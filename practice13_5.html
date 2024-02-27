@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Урок "Асинхронность"</title>
+  </head>
+
+  <body>
+    <h1 id="page-title">Список задач</h1>
+    <ul class="tasks" id="list">
+      <!-- Список рендерится из JS -->
+    </ul>
+    <br />
+    <div class="form">
+      <h3 class="form-title">Форма добавления</h3>
+      <div class="form-row">
+        Что нужно сделать:
+        <input
+          type="text"
+          id="text-input"
+          class="input"
+          placeholder="Выпить кофе"
+        />
+      </div>
+      <br />
+      <button class="button" id="add-button">Добавить</button>
+    </div>
+    <div class="form">
+        <div class="form-row">
+          Введите фамилию:
+          <input
+            type="text"
+            id="surname-input"
+            class="input"
+            placeholder="Указать здесь"
+          />
+        </div>
+    <div>
+        <div>
+            <br />
+            <button class="button" id="surname-button">Сохранить фамилию</button>
+            <button class="button" id="delete-surname-button">Стереть сохраненную строку</button>
+        </div>
+  </body>
+
+  <script>
+    const buttonElement = document.getElementById("add-button");
+    const listElement = document.getElementById("list");
+    const textInputElement = document.getElementById("text-input");
+    const surnameButtonElement = document.getElementById("surname-button");
+    const inputElement = document.getElementById("surname-input");
+    const deleteSurnameButton = document.getElementById("delete-surname-button");
+    let tasks = [];
+    let string =[];
+
+    //Запросы в API асинхронные, мы не знаем как долго будет выполняться этот запрос
+    //Запрос может выполняться секунды и даже минуты
+
+    // TODO получать из хранилища данных
+    const fetchAndRenderTasks = () => {
+      return fetch("https://wedev-api.sky.pro/api/todos", {
+        method: "GET"
+    })
+    
+    .then((response) => {
+      return response.json();
+    })
+    .then((responseData) => {
+      //console.log(responseData);
+      tasks = responseData.todos;
+      textInputElement.value = "";
+      renderTasks();
+      
+    })
+    }
+    fetchAndRenderTasks ();
+    const renderTasks = () => {
+
+      //fetchAndRenderTasks();
+
+      const tasksHtml = tasks
+        .map((task) => {
+          return `
+          <li class="task">
+            <p class="task-text">
+              ${task.text
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")}
+              <button data-id="${task.id}" class="button delete-button">Удалить</button>
+            </p>
+          </li>`;
+        })
+        .join("");
+
+      listElement.innerHTML = tasksHtml;
+      const deleteButtons = document.querySelectorAll(".delete-button");
+
+      for (const deleteButton of deleteButtons) {
+        deleteButton.addEventListener("click", (event) => {
+          event.stopPropagation();
+
+          deleteButton.innerHTML = "Задача удаляется...";
+
+        setTimeout(() => {
+            const id = deleteButton.dataset.id;
+
+
+        fetch("https://wedev-api.sky.pro/api/todos/" + id, {
+        method: "DELETE",
+      }).then((response) => {
+        return response.json();
+      })
+      .then((responseData) => {
+        console.log(responseData);
+        tasks = responseData.todos;
+        renderTasks();
+      })
+      renderTasks();
+        }, 1000);      
+        });
+      };
+    };
+
+   
+
+    buttonElement.addEventListener("click", () => {
+      if (textInputElement.value === "") {
+        return;
+      }
+      // TODO добавлять задачу в хранилище данных
+    
+      const startAt = Date.now();
+      let startAt1;
+      let startAt2;
+      let startAt3;
+      let startAt4;
+    
+      console.log('Начинаем делать запрос ' + startAt);
+
+      buttonElement.disabled = true;
+      buttonElement.textContent = 'Элемент добавляется...';
+
+     fetch("https://wedev-api.sky.pro/api/todos", {
+        method: "POST",
+        body: JSON.stringify({
+            text: textInputElement.value,
+        }),
+    })
+    .then((response) => {
+      startAt1 = Date.now() - startAt;
+      console.log('Post:' + startAt1);
+      return response;
+    })
+    .then((response) => {
+      return response.json();
+    })
+    .then((response) => {
+      startAt2 = Date.now() - startAt1 - startAt;
+      //console.log('Время:' + (Date.now() - startAt));
+      console.log('json ' + startAt2 + 'мс');
+      return response;
+    })
+    .then((response) => {
+      buttonElement.textContent = 'Загружаю список...';
+      return response;
+    })
+    .then(() => {
+      return fetchAndRenderTasks();
+    })
+    .then(() => {
+      buttonElement.disabled = false;
+      buttonElement.textContent = 'Добавить';
+      
+    })
+    })
+    
+      renderTasks();
+
+
+    // Сохранить фамилию
+    surnameButtonElement.addEventListener("click", () => {
+      if (inputElement.value === "") {
+        return;
+      }
+      
+     fetch("https://webdev-hw-api.vercel.app/api/tasks/string", {
+        method: "POST",
+        body: JSON.stringify({
+            string: inputElement.value,
+        }),
+    }).then((response) => {
+        return response.json();
+    })
+      .then((responseData) => {
+        console.log(responseData);
+        renderTasks();
+        inputElement.value = "";
+        })
+    })
+
+          
+  
+
+    //Удалить строку
+    deleteSurnameButton.addEventListener("click", () => {   
+     fetch("https://webdev-hw-api.vercel.app/api/tasks/string", {
+        method: "DELETE",
+    }).then((response) => {
+        return response.json();
+    })
+    .then((responseData) => {
+        string = responseData.string;
+        console.log(string);
+        })
+    })
+    
+
+
+    //таймер на список задач
+    const pageTitleEl = document.getElementById('page-title');
+    pageTitleEl.addEventListener('click', () => {
+        pageTitleEl.textContent = '3';
+
+        setTimeout(() => {
+            pageTitleEl.textContent = '2';
+
+            setTimeout(() => {
+                pageTitleEl.textContent = '1';
+
+                setTimeout(() => {
+                    pageTitleEl.textContent = 'Список задач';
+                }, 1000);
+            }, 1000);
+        }, 1000);
+    });
+
+    //фон
+ const fetchPromiseColor = fetch("https://wedev-api.sky.pro/api/tasks/random-red", {
+         method: 'GET'
+     });
+
+     fetchPromiseColor.then((response) => {
+         const jsonPromiseColor = response.json();
+         console.log(jsonPromiseColor);
+
+        jsonPromiseColor.then((responseData) => {
+            const color = responseData.color;
+            console.log(color);
+            document.body.style.backgroundColor = color;
+            renderTasks();
+        })
+    })
+  </script>
+</html>
