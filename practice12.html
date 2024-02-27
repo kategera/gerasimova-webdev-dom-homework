@@ -126,27 +126,72 @@
       }
       // TODO добавлять задачу в хранилище данных
     
+      const startAt = Date.now();
+      let startAt1;
+      let startAt2;
+      let startAt3;
+      let startAt4;
+    
+      console.log('Начинаем делать запрос ' + startAt);
+
+      buttonElement.disabled = true;
+      buttonElement.textContent = 'Элемент добавляется...';
+
      fetch("https://wedev-api.sky.pro/api/todos", {
         method: "POST",
         body: JSON.stringify({
             text: textInputElement.value,
         }),
-    }).then((response) => {
+    })
+    .then((response) => {
+      startAt1 = Date.now() - startAt;
+      console.log('Post:' + startAt1);
+      return response;
+    })
+    .then((response) => {
       return response.json();
     })
-      .then((responseData) => {
+    .then((response) => {
+      startAt2 = Date.now() - startAt1 - startAt;
+      //console.log('Время:' + (Date.now() - startAt));
+      console.log('json ' + startAt2 + 'мс');
+      return response;
+    })
+    .then((response) => {
+      buttonElement.textContent = 'Загружаю список...';
+      return response;
+    })
+    .then((responseData) => {
 
         fetch("https://wedev-api.sky.pro/api/todos", {
         method: "GET"
     })
     .then((response) => {
+      startAt3 = Date.now() - startAt - startAt1 - startAt2;
+      //console.log('Время:' + (Date.now() - startAt));
+      console.log('get ' + startAt3 + 'мс');
+      return response;
+    })
+    .then((response) => {
       return response.json()
+    })
+    .then((response) => {
+      startAt4 = Date.now() - startAt - startAt1 - startAt2 - startAt3;
+      //console.log('Время:' + (Date.now() - startAt));
+      console.log('get json ' + startAt4 + 'мс');
+      console.log('Итого: ' + (startAt1 + startAt2 + startAt3 + startAt4) + 'мс');
+      return response;
     })
     .then((responseData) => {
       console.log(responseData);
       tasks = responseData.todos;
       renderTasks();
        textInputElement.value = "";
+    })
+    .then((data) => {
+      buttonElement.disabled = false;
+      buttonElement.textContent = 'Добавить';
+      
     })
     })
     })
