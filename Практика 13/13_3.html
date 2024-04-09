@@ -96,27 +96,15 @@
       if (textInputElement.value === "") {
         return;
       }
+      const startAt = Date.now();
+      let startAt1;
+      let startAt2;
+      let startAt3;
+      let startAt4;
 
-      // подписываемся на успешное завершение запроса с помощью then
-      // fetch("https://webdev-hw-api.vercel.app/api/todos", {
-      //   method: "POST",
-      //   body: JSON.stringify({
-      //     text: textInputElement.value,
-      //   }),
-      // }).then((response) => {
-      //   response.json().then((responseData) => {
-      //     fetch("https://webdev-hw-api.vercel.app/api/todos", {
-      //       method: "GET",
-      //     }).then((response) => {
-      //       response.json().then((responseData) => {
-      //         tasks = responseData.todos;
-      //         renderTasks();
-      //       });
-      //     });
-      //   });
-      // });
+      console.log('Начинаем делать запрос ' + startAt);
 
-      // Пример кода выше, переписанный на цепочку промисов:
+
       fetch("https://webdev-hw-api.vercel.app/api/todos", {
         method: "POST",
         body: JSON.stringify({
@@ -124,7 +112,17 @@
         }),
       })
         .then((response) => {
+        startAt1 = Date.now() - startAt;
+        console.log('Post:' + startAt1 + 'мс');
+        return response;
+        })
+        .then((response) => {
           return response.json();
+        })
+        .then((response) => {
+        startAt2 = Date.now() - startAt1 - startAt;
+        console.log('json ' + startAt2 + 'мс');
+        return response;
         })
         .then((responseData) => {
           return fetch("https://webdev-hw-api.vercel.app/api/todos", {
@@ -132,7 +130,18 @@
           });
         })
         .then((response) => {
+        startAt3 = Date.now() - startAt - startAt1 - startAt2;
+        console.log('get ' + startAt3 + 'мс');
+        return response;
+        })
+        .then((response) => {
           return response.json();
+        })
+        .then((response) => {
+        startAt4 = Date.now() - startAt - startAt1 - startAt2 - startAt3;
+        console.log('get json ' + startAt4 + 'мс');
+        console.log('Итого: ' + (startAt1 + startAt2 + startAt3 + startAt4) + 'мс');
+        return response;
         })
         .then((responseData) => {
           tasks = responseData.todos;
