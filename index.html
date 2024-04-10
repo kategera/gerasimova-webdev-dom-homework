@@ -47,14 +47,14 @@
     let users = [];
     
 
-    function fetchRender() {
-      const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/kate-gera/comments", {
+    const fetchRender = (() => {
+      return fetch("https://wedev-api.sky.pro/api/v1/kate-gera/comments", {
       method: "GET",
-    });
-
-    fetchPromise.then((responce) => {
-      const jsonPromise = responce.json();
-      jsonPromise.then((responceData) => {
+    })
+    .then((responce) => {
+      return responce.json()
+    })
+    .then((responceData) => {
         users = responceData.comments.map((comment) => {
           return {
             name: comment.author.name,
@@ -67,7 +67,7 @@
         renderUsers();
       });
     });
-    };
+    
 
     fetchRender();
 
@@ -147,6 +147,9 @@
         return;
       }
     
+      buttonElement.disabled = true;
+      buttonElement.textContent = 'Данные загружаются...';
+
       fetch("https://wedev-api.sky.pro/api/v1/kate-gera/comments", {
         method: "POST",
         body: JSON.stringify({
@@ -154,11 +157,18 @@
             name: sanitizeHTML(nameInputElement.value),
         }),
     }).then((response) => {
-        response.json().then((responseData) => {
-        
-        fetchRender();
-        })
+        return response.json()
     })
+        .then((responseData) => {
+        
+        return fetchRender();
+        })
+        .then((data) => {
+        buttonElement.disabled = false;
+        buttonElement.textContent = 'Добавить';
+      
+    });
+    
 
     nameInputElement.value = '';
     commentInputElement.value = ''; 
