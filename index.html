@@ -7,7 +7,15 @@
   </head>
 
   <body>
+
+    
     <div class="container">
+
+      <div id ="preloader" class = "add-form comment-body comment-text" >
+        <p> Комментарии загружаются... </p>
+      </div>
+  
+
       <ul id="list" class="comments">
         <!-- Список рендерится из js -->
       </ul>
@@ -36,6 +44,14 @@
     .button-error {
       background-color: grey;
     }
+
+    
+    .disappear {
+      display: none;
+    }
+ 
+
+
   </style>
   <script>
     "use strict";
@@ -44,6 +60,7 @@
     const listElement = document.getElementById('list');
     const nameInputElement = document.getElementById('name-input');
     const commentInputElement = document.getElementById('comment-input');
+    const preloaderElement = document.getElementById('preloader');
     let users = [];
     
 
@@ -51,6 +68,7 @@
       return fetch("https://wedev-api.sky.pro/api/v1/kate-gera/comments", {
       method: "GET",
     })
+  
     .then((responce) => {
       return responce.json()
     })
@@ -65,6 +83,7 @@
           };
         });
         renderUsers();
+        preloaderElement.classList.add('disappear');
       });
     });
     
@@ -94,7 +113,8 @@
         return currentDate;
     };
 
-    
+
+
     const renderUsers  = () => {
       const usersHtml = users.map((user, index) => {
         return ` <li class="comment" data-index=${index}>
@@ -148,7 +168,7 @@
       }
     
       buttonElement.disabled = true;
-      buttonElement.textContent = 'Данные загружаются...';
+      buttonElement.textContent = 'Ваш комментарий загружается...';
 
       fetch("https://wedev-api.sky.pro/api/v1/kate-gera/comments", {
         method: "POST",
