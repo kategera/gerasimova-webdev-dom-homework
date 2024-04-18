@@ -69,11 +69,11 @@
           event.stopPropagation();   
           
             
-          const deleteToDo = (() =>{
-            fetch("https://webdev-hw-api.vercel.app/api/todos/" + id, {
+          function deleteToDo(id) {
+           return fetch("https://webdev-hw-api.vercel.app/api/todos/" + id, {
                   method: "DELETE",
                 })
-          })
+          }
 
           const id = deleteButton.dataset.id;
 
